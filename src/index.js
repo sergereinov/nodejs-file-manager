@@ -2,10 +2,10 @@ import * as readline from 'node:readline/promises';
 import { parseArgs } from './args.js'
 import ctrl_c from './ctrl-c.js'
 import { Commands } from './commands.js';
+import { getWorkdir as workdir } from './workdir.js';
 
 const args = parseArgs(process.argv.slice(2));
 const rl = readline.createInterface(process.stdin);
-const workdir = 'path_to_work_dir';
 
 function exit() {
     console.log();
@@ -15,7 +15,7 @@ function exit() {
 }
 
 function showWorkdir() {
-    console.log(`You are currently in ${workdir}`);
+    console.log(`You are currently in ${workdir()}`);
 
 }
 function showPrompt() {
@@ -28,7 +28,7 @@ const commands = new Commands({
 
 rl.on('line', (line) => {
     if (line.length > 0) {
-        if (!commands.do(workdir, line)) {
+        if (!commands.do(line)) {
             console.log('Invalid input');
         }
         showWorkdir();
