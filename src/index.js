@@ -1,4 +1,5 @@
 import { parseArgs } from './args.js'
+import ctrl_c from './ctrl-c.js'
 
 const args = parseArgs(process.argv.slice(2));
 
@@ -7,8 +8,11 @@ function exit() {
     process.exit();
 }
 
+ctrl_c.addHandler(exit); // setup CTRL-C exit callback
+
 console.log(`Welcome to the File Manager, ${args.username}!`);
 
 //TODO the app
 
-exit();
+setTimeout(() => exit, 5000); // testing
+//exit();
