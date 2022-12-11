@@ -3,14 +3,16 @@ export class Commands {
         this.commands = commands;
     }
 
-    do(line) {
+    async do(line) {
         const cmdLen = line.indexOf(' ');
         const cmd = (cmdLen > 0) ? line.substring(0, cmdLen) : line;
+
         const action = this.commands[cmd];
-        if (typeof (action) === 'function') {
-            const params = line.substring(cmdLen + 1);
-            return action(params);
+        if (typeof (action) !== 'function') {
+            throw new Error(`unknown command '${cmd}'`);
         }
-        return false;
+
+        const params = line.substring(cmdLen + 1);
+        return action(params);
     }
 };

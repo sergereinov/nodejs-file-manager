@@ -3,6 +3,7 @@ import { parseArgs } from './args.js'
 import ctrl_c from './ctrl-c.js'
 import { Commands } from './commands.js';
 import { getWorkdir as workdir } from './workdir.js';
+import navigation from './navigation.js'
 
 const args = parseArgs(process.argv.slice(2));
 const rl = readline.createInterface(process.stdin);
@@ -16,24 +17,32 @@ function exit() {
 
 function showWorkdir() {
     console.log(`You are currently in ${workdir()}`);
-
 }
 function showPrompt() {
     process.stdout.write('>');
 }
 
 const commands = new Commands({
-    '.exit': exit
+    '.exit': exit,
+    'up': navigation.up,
+    'cd': navigation.cd,
+    'ls': navigation.ls
 });
 
 rl.on('line', (line) => {
     if (line.length > 0) {
-        if (!commands.do(line)) {
-            console.log('Invalid input');
-        }
-        showWorkdir();
+        commands.do(line)
+            .catch((err) => {
+                console.error(err); // original error message, uncomment it to check behaviour
+                console.log('Invalid input'); // simplified error message
+            })
+            .finally(() => {
+                showWorkdir();
+                showPrompt();
+            });
+    } else {
+        showPrompt();
     }
-    showPrompt();
 });
 
 ctrl_c.addHandler(exit); // setup CTRL-C exit callback
