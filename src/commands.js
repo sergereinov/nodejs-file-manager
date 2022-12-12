@@ -9,7 +9,8 @@ export class Commands {
 
         const action = this.commands[cmd];
         if (typeof (action) !== 'function') {
-            throw new Error(`unknown command '${cmd}'`);
+            // error: unknown command '${cmd}'
+            throw new Error('Invalid input');
         }
 
         const params = line.substring(cmdLen + 1);

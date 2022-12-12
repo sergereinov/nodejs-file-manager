@@ -8,6 +8,13 @@ function up() {
 }
 
 async function cd(target) {
+    // Check input args
+    target = target.trim();
+    if (target.length === 0) {
+        // error: target path not set
+        throw new Error('Invalid input')
+    }
+
     let dir;
     if (path.isAbsolute(target)) {
         dir = path.resolve(target);
@@ -21,7 +28,8 @@ async function cd(target) {
             setWorkdir(dir);
         })
         .catch(() => {
-            throw new Error(`failed to change working dir to '${dir}'`);
+            // error: failed to change working dir to '${dir}'
+            throw new Error('Operation failed');
         });
 
     return promise;

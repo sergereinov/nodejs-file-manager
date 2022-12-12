@@ -32,10 +32,8 @@ const commands = new Commands({
 rl.on('line', (line) => {
     if (line.length > 0) {
         commands.do(line)
-            .catch((err) => {
-                console.error(err); // original error message, uncomment it to check behaviour
-                console.log('Invalid input'); // simplified error message
-            })
+            //.catch(console.error) // error with stack trace, uncomment it to check behaviour
+            .catch((e) => console.log(e.message))
             .finally(() => {
                 showWorkdir();
                 showPrompt();
