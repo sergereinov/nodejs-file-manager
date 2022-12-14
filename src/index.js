@@ -4,6 +4,7 @@ import ctrl_c from './ctrl-c.js'
 import { Commands } from './commands.js';
 import { getWorkdir as workdir } from './workdir.js';
 import navigation from './navigation.js'
+import basic_ops from './basic-ops.js'
 
 const args = parseArgs(process.argv.slice(2));
 const rl = readline.createInterface(process.stdin);
@@ -16,6 +17,7 @@ function exit() {
 }
 
 function showWorkdir() {
+    console.log();
     console.log(`You are currently in ${workdir()}`);
 }
 function showPrompt() {
@@ -26,7 +28,13 @@ const commands = new Commands({
     '.exit': exit,
     'up': navigation.up,
     'cd': navigation.cd,
-    'ls': navigation.ls
+    'ls': navigation.ls,
+    'cat': basic_ops.cat,
+    'add': basic_ops.add,
+    'rn': basic_ops.rn,
+    'cp': basic_ops.cp,
+    'mv': basic_ops.mv,
+    'rm': basic_ops.rm
 });
 
 rl.on('line', (line) => {
