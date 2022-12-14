@@ -1,36 +1,9 @@
 /** @module basic_ops */
 
-import { splitParams } from './util.js'
+import { splitParams, pathToAbsolute, lazyCopy } from './util.js';
 import { getWorkdir } from "./workdir.js";
-import fs from 'node:fs/promises'
-import path from 'node:path'
-
-/**
- * Resolve relative or absolute path to absolute path.
- * @param {string} target relative or absolute path
- * @returns {string} absolute path to target
- */
-function pathToAbsolute(target) {
-    let dir;
-    if (path.isAbsolute(target)) {
-        dir = path.resolve(target);
-    } else {
-        dir = path.resolve(path.join(getWorkdir(), target));
-    }
-    return dir;
-}
-
-/**
- * Lazy copying of chunks from read stream to write stream
- * @param {ReadableStream} readable 
- * @param {WritableStream} writable 
- * @returns {Promise}
- */
-async function lazyCopy(readable, writable) {
-    for await (const chunk of readable) {
-        writable.write(chunk);
-    }
-}
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 /**
  * Read file and print it's content in console.
@@ -168,7 +141,7 @@ function cp(params) {
             if (readHandleToOldFile) readHandleToOldFile.close();
             if (writeHandleToNewFile) writeHandleToNewFile.close();
         })
-        .catch((e) => {
+        .catch(() => {
             throw new Error('Operation failed');
         });
 
@@ -224,10 +197,10 @@ function mv(params) {
             // Delete original file
             return fs.rm(absolutePathToOldFile);
         })
-        .catch((e) => {
+        .catch(() => {
             if (readHandleToOldFile) readHandleToOldFile.close();
             if (writeHandleToNewFile) writeHandleToNewFile.close();
-            
+
             throw new Error('Operation failed');
         });
 
@@ -256,7 +229,7 @@ function rm(pathToFile) {
 
     // Delete file
     const promise = fs.rm(absolutePathToFile)
-        .catch((e) => {
+        .catch(() => {
             throw new Error('Operation failed');
         });
 
