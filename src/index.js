@@ -5,6 +5,7 @@ import { Commands } from './commands.js';
 import { getWorkdir as workdir } from './workdir.js';
 import navigation from './navigation.js'
 import basic_ops from './basic-ops.js'
+import os_info from './os-info.js'
 
 const args = parseArgs(process.argv.slice(2));
 const rl = readline.createInterface(process.stdin);
@@ -34,7 +35,8 @@ const commands = new Commands({
     'rn': basic_ops.rn,
     'cp': basic_ops.cp,
     'mv': basic_ops.mv,
-    'rm': basic_ops.rm
+    'rm': basic_ops.rm,
+    'os': os_info.info
 });
 
 rl.on('line', (line) => {
