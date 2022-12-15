@@ -6,7 +6,9 @@ import zlib from 'node:zlib';
 /**
  * Compress file (using Brotli algorithm, should be done using Streams API).
  * 
- * CLI example: `compress test.txt test.txt.br`
+ * CLI examples:
+ *  - `compress test.txt test.txt.br`
+ *  - `compress ./test.txt d:/test.txt.br`
  * 
  * @param {string} params command arguments string containing `path_to_file path_to_destination`
  * @returns {Promise} Promise with deferred operation
@@ -50,7 +52,9 @@ export function compress(params) {
 /**
  * Decompress file (using Brotli algorithm, should be done using Streams API).
  * 
- * CLI example: `decompress test.txt.br test.txt`
+ * CLI examples:
+ *  - `decompress test.txt.br test.txt`
+ *  - `decompress d:/test.txt.br ./test.txt`
  * 
  * @param {string} params command arguments string containing `path_to_file path_to_destination`
  * @returns {Promise} Promise with deferred operation
