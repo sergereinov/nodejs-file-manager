@@ -11,7 +11,7 @@ import zlib from 'node:zlib';
  * @param {string} params command arguments string containing `path_to_file path_to_destination`
  * @returns {Promise} Promise with deferred operation
  */
-function compress(params) {
+export function compress(params) {
     const [pathToFile, pathToDestination] = util.splitParams(params);
 
     // Check input
@@ -55,7 +55,7 @@ function compress(params) {
  * @param {string} params command arguments string containing `path_to_file path_to_destination`
  * @returns {Promise} Promise with deferred operation
  */
-function decompress(params) {
+export function decompress(params) {
     const [pathToFile, pathToDestination] = util.splitParams(params);
 
     // Check input
@@ -89,9 +89,4 @@ function decompress(params) {
         });
 
     return promise;
-}
-
-export default {
-    compress,
-    decompress
 }

@@ -1,4 +1,4 @@
-import { pathToAbsolute, lazyCopy } from './util.js';
+import * as util from './util.js';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 
@@ -13,14 +13,14 @@ import { createHash } from 'node:crypto';
  * @param {string} pathToFile 
  * @returns {Promise} Promise with deferred operation
  */
-function calcHash(pathToFile) {
+export function calcHash(pathToFile) {
     // Check input
     pathToFile = pathToFile.trim();
     if (!pathToFile) {
         throw new Error('Invalid input');
     }
 
-    const absolutePathToFile = pathToAbsolute(pathToFile);
+    const absolutePathToFile = util.pathToAbsolute(pathToFile);
 
     // Calc hash
     let readHandleToFile, hasher;
@@ -28,7 +28,7 @@ function calcHash(pathToFile) {
         .then(handle => {
             readHandleToFile = handle;
             hasher = createHash('sha256');
-            return lazyCopy(
+            return util.lazyCopy(
                 readHandleToFile.createReadStream(),
                 hasher
             );
@@ -45,8 +45,4 @@ function calcHash(pathToFile) {
         });
 
     return promise;
-}
-
-export default {
-    calcHash
 }

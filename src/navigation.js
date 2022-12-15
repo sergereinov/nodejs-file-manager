@@ -2,12 +2,12 @@ import { getWorkdir, setWorkdir } from "./workdir.js";
 import path from 'node:path'
 import * as fs from 'node:fs/promises'
 
-function up() {
+export function up() {
     const dir = path.resolve(getWorkdir(), '..');
     setWorkdir(dir);
 }
 
-async function cd(target) {
+export async function cd(target) {
     // Check input args
     target = target.trim();
     if (target.length === 0) {
@@ -35,7 +35,7 @@ async function cd(target) {
     return promise;
 }
 
-async function ls() {
+export async function ls() {
     const promise = fs.readdir(getWorkdir(), { withFileTypes: true })
         .then((e) => {
 
@@ -64,10 +64,4 @@ async function ls() {
         });
 
     return promise;
-}
-
-export default {
-    up,
-    cd,
-    ls
 }

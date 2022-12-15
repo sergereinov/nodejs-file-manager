@@ -1,6 +1,4 @@
-/** @module basic_ops */
-
-import { splitParams, pathToAbsolute, lazyCopy } from './util.js';
+import * as util from './util.js';
 import { getWorkdir } from "./workdir.js";
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -16,18 +14,18 @@ import path from 'node:path';
  * @param {string} pathToFile 
  * @returns {Promise} Promise with deferred operation
  */
-function cat(pathToFile) {
+export function cat(pathToFile) {
     // Check input
     pathToFile = pathToFile.trim();
     if (!pathToFile) {
         throw new Error('Invalid input');
     }
 
-    const absolutePathToFile = pathToAbsolute(pathToFile);
+    const absolutePathToFile = util.pathToAbsolute(pathToFile);
 
     // Copy to stdout
     const promise = fs.open(absolutePathToFile)
-        .then(filehandle => lazyCopy(
+        .then(filehandle => util.lazyCopy(
             filehandle.createReadStream(),
             process.stdout
         ))
@@ -46,7 +44,7 @@ function cat(pathToFile) {
  * @param {string} newFilename 
  * @returns {Promise} Promise with deferred operation
  */
-function add(newFilename) {
+export function add(newFilename) {
     // Check input
     newFilename = newFilename.trim();
     if (!newFilename || (path.basename(newFilename) !== newFilename)) {
@@ -73,8 +71,8 @@ function add(newFilename) {
  * @param {string} params command arguments string containing `path_to_file new_filename`
  * @returns {Promise} Promise with deferred operation
  */
-function rn(params) {
-    const [pathToFile, newFilename] = splitParams(params);
+export function rn(params) {
+    const [pathToFile, newFilename] = util.splitParams(params);
 
     // Check input
     if (!pathToFile || !newFilename || (path.basename(newFilename) !== newFilename)) {
@@ -82,7 +80,7 @@ function rn(params) {
     }
 
     // Prepare paths
-    const absolutePathToOldFile = pathToAbsolute(pathToFile);
+    const absolutePathToOldFile = util.pathToAbsolute(pathToFile);
     const dir = path.dirname(absolutePathToOldFile);
     const absolutePathToNewFile = path.join(dir, newFilename);
     if (absolutePathToNewFile !== path.resolve(absolutePathToNewFile)) {
@@ -110,8 +108,8 @@ function rn(params) {
  * @param {string} params command arguments string containing `path_to_file path_to_new_directory`
  * @returns {Promise} Promise with deferred operation
  */
-function cp(params) {
-    const [pathToFile, pathToNewDirectory] = splitParams(params);
+export function cp(params) {
+    const [pathToFile, pathToNewDirectory] = util.splitParams(params);
 
     // Check input
     if (!pathToFile || !pathToNewDirectory) {
@@ -119,9 +117,9 @@ function cp(params) {
     }
 
     // Prepare paths
-    const absolutePathToOldFile = pathToAbsolute(pathToFile);
+    const absolutePathToOldFile = util.pathToAbsolute(pathToFile);
     const filename = path.basename(absolutePathToOldFile);
-    const absolutePathToNewFile = pathToAbsolute(path.join(pathToNewDirectory, filename));
+    const absolutePathToNewFile = util.pathToAbsolute(path.join(pathToNewDirectory, filename));
 
     // Copy file
     let readHandleToOldFile, writeHandleToNewFile;
@@ -132,7 +130,7 @@ function cp(params) {
         })
         .then(handle => {
             writeHandleToNewFile = handle;
-            return lazyCopy(
+            return util.lazyCopy(
                 readHandleToOldFile.createReadStream(),
                 writeHandleToNewFile.createWriteStream()
             );
@@ -159,8 +157,8 @@ function cp(params) {
  * @param {string} params command arguments string containing `path_to_file path_to_new_directory`
  * @returns {Promise} Promise with deferred operation
  */
-function mv(params) {
-    const [pathToFile, pathToNewDirectory] = splitParams(params);
+export function mv(params) {
+    const [pathToFile, pathToNewDirectory] = util.splitParams(params);
 
     // Check input
     if (!pathToFile || !pathToNewDirectory) {
@@ -168,9 +166,9 @@ function mv(params) {
     }
 
     // Prepare paths
-    const absolutePathToOldFile = pathToAbsolute(pathToFile);
+    const absolutePathToOldFile = util.pathToAbsolute(pathToFile);
     const filename = path.basename(absolutePathToOldFile);
-    const absolutePathToNewFile = pathToAbsolute(path.join(pathToNewDirectory, filename));
+    const absolutePathToNewFile = util.pathToAbsolute(path.join(pathToNewDirectory, filename));
 
     // Move file
     let readHandleToOldFile, writeHandleToNewFile;
@@ -183,7 +181,7 @@ function mv(params) {
             writeHandleToNewFile = handle;
 
             // Copy content
-            return lazyCopy(
+            return util.lazyCopy(
                 readHandleToOldFile.createReadStream(),
                 writeHandleToNewFile.createWriteStream()
             );
@@ -218,14 +216,14 @@ function mv(params) {
  * @param {string} pathToFile 
  * @returns {Promise} Promise with deferred operation
  */
-function rm(pathToFile) {
+export function rm(pathToFile) {
     // Check input
     pathToFile = pathToFile.trim();
     if (!pathToFile) {
         throw new Error('Invalid input');
     }
 
-    const absolutePathToFile = pathToAbsolute(pathToFile);
+    const absolutePathToFile = util.pathToAbsolute(pathToFile);
 
     // Delete file
     const promise = fs.rm(absolutePathToFile)
@@ -234,13 +232,4 @@ function rm(pathToFile) {
         });
 
     return promise;
-}
-
-export default {
-    cat,
-    add,
-    rn,
-    cp,
-    mv,
-    rm
 }

@@ -21,7 +21,7 @@ const subcommands = {
  * @param {string} param containing one of the subcommands such as `--EOL`, `--cpus`, etc.
  * @returns 
  */
-function info(param) {
+export function info(param) {
     const action = subcommands[param];
     if (typeof (action) !== 'function') {
         // error: unknown subcommand '${param}'
@@ -87,8 +87,4 @@ function showUsername() {
  */
 function showArchitecture() {
     console.log(os.arch());
-}
-
-export default {
-    info
 }

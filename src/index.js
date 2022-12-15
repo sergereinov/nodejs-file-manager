@@ -3,11 +3,11 @@ import { parseArgs } from './args.js';
 import ctrl_c from './ctrl-c.js';
 import { Commands } from './commands.js';
 import { getWorkdir as workdir } from './workdir.js';
-import navigation from './navigation.js';
-import basic_ops from './basic-ops.js';
-import os_info from './os-info.js';
-import hash from './hash.js';
-import brzip from './brzip.js';
+import * as navigation from './navigation.js';
+import * as basic_ops from './basic-ops.js';
+import * as os_info from './os-info.js';
+import * as hash from './hash.js';
+import * as brzip from './brzip.js';
 
 const args = parseArgs(process.argv.slice(2));
 const rl = readline.createInterface(process.stdin);
