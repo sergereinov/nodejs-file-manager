@@ -2,12 +2,29 @@ import { getWorkdir, setWorkdir } from "./workdir.js";
 import path from 'node:path'
 import * as fs from 'node:fs/promises'
 
+/**
+ * Go upper from current directory
+ * (when you are in the root folder this operation shouldn't change working directory).
+ * 
+ * CLI example: `up`
+ */
 export function up() {
     const dir = path.resolve(getWorkdir(), '..');
     setWorkdir(dir);
 }
 
-export async function cd(target) {
+/**
+ * Go to dedicated folder from current directory (path_to_directory can be relative or absolute).
+ * 
+ * CLI examples:
+ *  - `cd ../`
+ *  - `cd temp/`
+ *  - `cd d:/temp`
+ * 
+ * @param {string} target 
+ * @returns {Promise} Promise with deferred operation
+ */
+export function cd(target) {
     // Check input args
     target = target.trim();
     if (target.length === 0) {
@@ -35,7 +52,14 @@ export async function cd(target) {
     return promise;
 }
 
-export async function ls() {
+/**
+ * Print in console list of all files and folders in current directory.
+ * 
+ * CLI example: `ls`
+ * 
+ * @returns {Promise} Promise with deferred operation
+ */
+export function ls() {
     const promise = fs.readdir(getWorkdir(), { withFileTypes: true })
         .then((e) => {
 
