@@ -7,6 +7,7 @@ import navigation from './navigation.js';
 import basic_ops from './basic-ops.js';
 import os_info from './os-info.js';
 import hash from './hash.js';
+import brzip from './brzip.js';
 
 const args = parseArgs(process.argv.slice(2));
 const rl = readline.createInterface(process.stdin);
@@ -38,7 +39,9 @@ const commands = new Commands({
     'mv': basic_ops.mv,
     'rm': basic_ops.rm,
     'os': os_info.info,
-    'hash': hash.calcHash
+    'hash': hash.calcHash,
+    'compress': brzip.compress,
+    'decompress': brzip.decompress
 });
 
 rl.on('line', (line) => {
