@@ -33,6 +33,11 @@ export function compress(params) {
         throw new Error('Operation failed');
     }
 
+    // Measure compression time
+    const elapsedTimeLabel = 'Compression completed in';
+    console.time(elapsedTimeLabel);
+    console.log(`Compressing to '${absolutePathToDestination}'...`);
+
     // Compress file
     const promise = streamPromises.pipeline(
         readStream,
@@ -40,7 +45,8 @@ export function compress(params) {
         writeStream
     )
         .then(() => {
-            console.log(`Done compress to '${absolutePathToDestination}'`);
+            // End time measurement and show report like 'Compression completed in: 43.296s'
+            console.timeEnd(elapsedTimeLabel);
         })
         .catch(() => {
             throw new Error('Operation failed');
