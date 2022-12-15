@@ -24,11 +24,18 @@ export function cat(pathToFile) {
     const absolutePathToFile = util.pathToAbsolute(pathToFile);
 
     // Copy to stdout
+    let readHandleToFile;
     const promise = fs.open(absolutePathToFile)
-        .then(filehandle => util.lazyCopy(
-            filehandle.createReadStream(),
-            process.stdout
-        ))
+        .then(filehandle => {
+            readHandleToFile = filehandle;
+            return util.lazyCopy(
+                readHandleToFile.createReadStream(),
+                process.stdout
+            )
+        })
+        .finally(() => {
+            if (readHandleToFile) readHandleToFile.close();
+        })
         .catch(() => {
             throw new Error('Operation failed');
         });
