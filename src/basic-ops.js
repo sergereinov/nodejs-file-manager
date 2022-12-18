@@ -1,5 +1,4 @@
 import * as util from './util.js';
-import { getWorkdir } from "./workdir.js";
 import { errorInvalidInput, errorOperationFailed } from './errors.js'
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -17,16 +16,14 @@ import path from 'node:path';
  */
 export function cat(pathToFile) {
     // Check input
-    pathToFile = pathToFile.trim();
-    if (!pathToFile) {
+    const target = pathToFile.trim();
+    if (!target) {
         throw new Error(errorInvalidInput);
     }
 
-    const absolutePathToFile = util.pathToAbsolute(pathToFile);
-
     // Copy to stdout
     let readHandleToFile;
-    const promise = fs.open(absolutePathToFile)
+    const promise = fs.open(target)
         .then(filehandle => {
             readHandleToFile = filehandle;
             return util.lazyCopy(
@@ -35,7 +32,7 @@ export function cat(pathToFile) {
             )
         })
         .finally(() => {
-            if (readHandleToFile) readHandleToFile.close();
+            readHandleToFile?.close();
         })
         .catch(() => {
             throw new Error(errorOperationFailed);
@@ -54,15 +51,13 @@ export function cat(pathToFile) {
  */
 export function add(newFilename) {
     // Check input
-    newFilename = newFilename.trim();
-    if (!newFilename || (path.basename(newFilename) !== newFilename)) {
+    const target = newFilename.trim();
+    if (!target || (path.basename(target) !== target)) {
         throw new Error(errorInvalidInput);
     }
 
-    const absolutePathToFile = path.resolve(path.join(getWorkdir(), newFilename));
-
     // Create new file
-    const promise = fs.open(absolutePathToFile, 'wx')
+    const promise = fs.open(target, 'wx')
         .then(filehandle => filehandle.close())
         .catch(() => {
             throw new Error(errorOperationFailed);
@@ -87,17 +82,11 @@ export function rn(params) {
         throw new Error(errorInvalidInput);
     }
 
-    // Prepare paths
-    const absolutePathToOldFile = util.pathToAbsolute(pathToFile);
-    const dir = path.dirname(absolutePathToOldFile);
-    const absolutePathToNewFile = path.join(dir, newFilename);
-    if (absolutePathToNewFile !== path.resolve(absolutePathToNewFile)) {
-        // error: probably given a path instead of a filename
-        throw new Error(errorInvalidInput);
-    }
+    // Prepare path
+    const pathToNewFile = path.join(path.dirname(pathToFile), newFilename);
 
     // Rename file
-    const promise = fs.rename(absolutePathToOldFile, absolutePathToNewFile)
+    const promise = fs.rename(pathToFile, pathToNewFile)
         .catch(() => {
             throw new Error(errorOperationFailed);
         });
@@ -124,17 +113,15 @@ export function cp(params) {
         throw new Error(errorInvalidInput);
     }
 
-    // Prepare paths
-    const absolutePathToOldFile = util.pathToAbsolute(pathToFile);
-    const filename = path.basename(absolutePathToOldFile);
-    const absolutePathToNewFile = util.pathToAbsolute(path.join(pathToNewDirectory, filename));
+    // Prepare path
+    const pathToNewFile = path.join(pathToNewDirectory, path.basename(pathToFile));
 
     // Copy file
     let readHandleToOldFile, writeHandleToNewFile;
-    const promise = fs.open(absolutePathToOldFile, 'r')
+    const promise = fs.open(pathToFile, 'r')
         .then(handle => {
             readHandleToOldFile = handle;
-            return fs.open(absolutePathToNewFile, 'wx');
+            return fs.open(pathToNewFile, 'wx');
         })
         .then(handle => {
             writeHandleToNewFile = handle;
@@ -144,8 +131,8 @@ export function cp(params) {
             );
         })
         .finally(() => {
-            if (readHandleToOldFile) readHandleToOldFile.close();
-            if (writeHandleToNewFile) writeHandleToNewFile.close();
+            readHandleToOldFile?.close();
+            writeHandleToNewFile?.close();
         })
         .catch(() => {
             throw new Error(errorOperationFailed);
@@ -173,17 +160,15 @@ export function mv(params) {
         throw new Error(errorInvalidInput);
     }
 
-    // Prepare paths
-    const absolutePathToOldFile = util.pathToAbsolute(pathToFile);
-    const filename = path.basename(absolutePathToOldFile);
-    const absolutePathToNewFile = util.pathToAbsolute(path.join(pathToNewDirectory, filename));
+    // Prepare path
+    const pathToNewFile = path.join(pathToNewDirectory, path.basename(pathToFile));
 
     // Move file
     let readHandleToOldFile, writeHandleToNewFile;
-    const promise = fs.open(absolutePathToOldFile, 'r')
+    const promise = fs.open(pathToFile, 'r')
         .then(handle => {
             readHandleToOldFile = handle;
-            return fs.open(absolutePathToNewFile, 'wx');
+            return fs.open(pathToNewFile, 'wx');
         })
         .then(handle => {
             writeHandleToNewFile = handle;
@@ -201,11 +186,11 @@ export function mv(params) {
             writeHandleToNewFile = null;
 
             // Delete original file
-            return fs.rm(absolutePathToOldFile);
+            return fs.rm(pathToFile);
         })
         .catch(() => {
-            if (readHandleToOldFile) readHandleToOldFile.close();
-            if (writeHandleToNewFile) writeHandleToNewFile.close();
+            readHandleToOldFile?.close();
+            writeHandleToNewFile?.close();
 
             throw new Error(errorOperationFailed);
         });
@@ -226,15 +211,13 @@ export function mv(params) {
  */
 export function rm(pathToFile) {
     // Check input
-    pathToFile = pathToFile.trim();
-    if (!pathToFile) {
+    const target = pathToFile.trim();
+    if (!target) {
         throw new Error(errorInvalidInput);
     }
 
-    const absolutePathToFile = util.pathToAbsolute(pathToFile);
-
     // Delete file
-    const promise = fs.rm(absolutePathToFile)
+    const promise = fs.rm(target)
         .catch(() => {
             throw new Error(errorOperationFailed);
         });

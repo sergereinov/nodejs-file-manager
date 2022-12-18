@@ -1,5 +1,4 @@
-import { getWorkdir, setWorkdir } from "./workdir.js";
-import { errorInvalidInput, errorOperationFailed } from './errors.js'
+import { errorOperationFailed } from './errors.js'
 import path from 'node:path'
 import * as fs from 'node:fs/promises'
 
@@ -9,10 +8,7 @@ import * as fs from 'node:fs/promises'
  * 
  * CLI example: `up`
  */
-export function up() {
-    const dir = path.resolve(getWorkdir(), '..');
-    setWorkdir(dir);
-}
+export const up = () => cd('..');
 
 /**
  * Go to dedicated folder from current directory (path_to_directory can be relative or absolute).
@@ -23,39 +19,14 @@ export function up() {
  *  - `cd d:/temp`
  * 
  * @param {string} pathToDirectory 
- * @returns {Promise} Promise with deferred operation
  */
 export function cd(pathToDirectory) {
-    // Check input args
-    let target = pathToDirectory.trim();
-    if (target.length === 0) {
-        // error: target path not set
-        throw new Error(errorInvalidInput)
+    try {
+        const dir = pathToDirectory.endsWith(':') ? path.join(pathToDirectory, './') : pathToDirectory;
+        process.chdir(dir);
+    } catch (_) {
+        throw new Error(errorOperationFailed);
     }
-
-    target = target + '/'; // in case of change disk like 'cd d:'
-
-    let dir;
-    if (path.isAbsolute(target)) {
-        dir = path.resolve(target);
-    } else {
-        dir = path.resolve(path.join(getWorkdir(), target));
-    }
-
-    // Check if the destination folder exists
-    const promise = fs.stat(dir)
-        .then((stats) => {
-            if (!stats.isDirectory()) {
-                throw new Error(errorOperationFailed);
-            }
-            setWorkdir(dir);
-        })
-        .catch(() => {
-            // error: failed to change working dir to '${dir}'
-            throw new Error(errorOperationFailed);
-        });
-
-    return promise;
 }
 
 /**
@@ -66,7 +37,7 @@ export function cd(pathToDirectory) {
  * @returns {Promise} Promise with deferred operation
  */
 export function ls() {
-    const promise = fs.readdir(getWorkdir(), { withFileTypes: true })
+    const promise = fs.readdir(process.cwd(), { withFileTypes: true })
         .then((e) => {
 
             // Sort by names and directory first

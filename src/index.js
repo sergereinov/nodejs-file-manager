@@ -1,8 +1,8 @@
+import { homedir } from 'node:os'
 import * as readline from 'node:readline/promises';
 import { parseArgs } from './args.js';
 import ctrl_c from './ctrl-c.js';
 import { Commands } from './commands.js';
-import { getWorkdir as workdir } from './workdir.js';
 import * as navigation from './navigation.js';
 import * as basic_ops from './basic-ops.js';
 import * as os_info from './os-info.js';
@@ -10,18 +10,19 @@ import * as hash from './hash.js';
 import * as brzip from './brzip.js';
 
 const args = parseArgs(process.argv.slice(2));
+const username = () => args.username ?? 'Undefined User';
 const rl = readline.createInterface(process.stdin);
 
 function exit() {
     console.log();
-    console.log(`Thank you for using File Manager, ${args.username}, goodbye!`);
+    console.log(`Thank you for using File Manager, ${username()}, goodbye!`);
     rl.close();
     process.exit();
 }
 
 function showWorkdir() {
     console.log();
-    console.log(`You are currently in ${workdir()}`);
+    console.log(`You are currently in ${process.cwd()}`);
 }
 function showPrompt() {
     process.stdout.write('>');
@@ -62,7 +63,9 @@ rl.on('line', (line) => {
 
 ctrl_c.addHandler(exit); // setup CTRL-C exit callback
 
-console.log(`Welcome to the File Manager, ${args.username}!`);
+process.chdir(homedir());
+
+console.log(`Welcome to the File Manager, ${username()}!`);
 
 showWorkdir();
 showPrompt();

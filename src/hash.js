@@ -21,11 +21,9 @@ export function calcHash(pathToFile) {
         throw new Error(errorInvalidInput);
     }
 
-    const absolutePathToFile = util.pathToAbsolute(pathToFile);
-
     // Calc hash
     let readHandleToFile, hasher;
-    const promise = fs.open(absolutePathToFile, 'r')
+    const promise = fs.open(pathToFile, 'r')
         .then(handle => {
             readHandleToFile = handle;
             hasher = createHash('sha256');

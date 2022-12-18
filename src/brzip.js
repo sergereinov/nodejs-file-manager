@@ -22,22 +22,13 @@ export function compress(params) {
         throw new Error(errorInvalidInput);
     }
 
-    // Prepare paths
-    const absolutePathToFile = util.pathToAbsolute(pathToFile);
-    const absolutePathToDestination = util.pathToAbsolute(pathToDestination);
-
     // Prepare streams
     try {
-        var readStream = fs.createReadStream(absolutePathToFile);
-        var writeStream = fs.createWriteStream(absolutePathToDestination, { flags: 'wx' });
+        var readStream = fs.createReadStream(pathToFile);
+        var writeStream = fs.createWriteStream(pathToDestination, { flags: 'wx' });
     } catch (_) {
         throw new Error(errorOperationFailed);
     }
-
-    // Measure compression time
-    const elapsedTimeLabel = 'Compression completed in';
-    console.time(elapsedTimeLabel);
-    console.log(`Compressing to '${absolutePathToDestination}'...`);
 
     // Compress file
     const promise = streamPromises.pipeline(
@@ -46,8 +37,7 @@ export function compress(params) {
         writeStream
     )
         .then(() => {
-            // End time measurement and show report like 'Compression completed in: 43.296s'
-            console.timeEnd(elapsedTimeLabel);
+            console.log(`Done compress to '${pathToDestination}'`);
         })
         .catch(() => {
             throw new Error(errorOperationFailed);
@@ -74,14 +64,10 @@ export function decompress(params) {
         throw new Error(errorInvalidInput);
     }
 
-    // Prepare paths
-    const absolutePathToFile = util.pathToAbsolute(pathToFile);
-    const absolutePathToDestination = util.pathToAbsolute(pathToDestination);
-
     // Prepare streams
     try {
-        var readStream = fs.createReadStream(absolutePathToFile);
-        var writeStream = fs.createWriteStream(absolutePathToDestination, { flags: 'wx' });
+        var readStream = fs.createReadStream(pathToFile);
+        var writeStream = fs.createWriteStream(pathToDestination, { flags: 'wx' });
     } catch (_) {
         throw new Error(errorOperationFailed);
     }
@@ -93,7 +79,7 @@ export function decompress(params) {
         writeStream
     )
         .then(() => {
-            console.log(`Done decompress to '${absolutePathToDestination}'`);
+            console.log(`Done decompress to '${pathToDestination}'`);
         })
         .catch(() => {
             throw new Error(errorOperationFailed);

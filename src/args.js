@@ -1,4 +1,4 @@
-// input args shuold be in format ['--prop1=value1', '--prop2=value2']
+// input args should be in format ['--prop1=value1', '--prop2=value2']
 // returns an object like {'prop1':'value1', 'prop2':'value2}
 export function parseArgs(args) {
     return args.reduce((acc, cur) => {
