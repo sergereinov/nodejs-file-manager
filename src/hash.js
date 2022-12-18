@@ -1,4 +1,5 @@
 import * as util from './util.js';
+import { errorInvalidInput, errorOperationFailed } from './errors.js'
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 
@@ -17,7 +18,7 @@ export function calcHash(pathToFile) {
     // Check input
     pathToFile = pathToFile.trim();
     if (!pathToFile) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     const absolutePathToFile = util.pathToAbsolute(pathToFile);
@@ -41,7 +42,7 @@ export function calcHash(pathToFile) {
             if (readHandleToFile) readHandleToFile.close();
         })
         .catch(() => {
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;

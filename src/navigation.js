@@ -1,4 +1,5 @@
 import { getWorkdir, setWorkdir } from "./workdir.js";
+import { errorInvalidInput, errorOperationFailed } from './errors.js'
 import path from 'node:path'
 import * as fs from 'node:fs/promises'
 
@@ -29,7 +30,7 @@ export function cd(pathToDirectory) {
     let target = pathToDirectory.trim();
     if (target.length === 0) {
         // error: target path not set
-        throw new Error('Invalid input')
+        throw new Error(errorInvalidInput)
     }
 
     target = target + '/'; // in case of change disk like 'cd d:'
@@ -45,13 +46,13 @@ export function cd(pathToDirectory) {
     const promise = fs.stat(dir)
         .then((stats) => {
             if (!stats.isDirectory()) {
-                throw new Error('Operation failed');
+                throw new Error(errorOperationFailed);
             }
             setWorkdir(dir);
         })
         .catch(() => {
             // error: failed to change working dir to '${dir}'
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;

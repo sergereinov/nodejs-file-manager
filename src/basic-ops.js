@@ -1,5 +1,6 @@
 import * as util from './util.js';
 import { getWorkdir } from "./workdir.js";
+import { errorInvalidInput, errorOperationFailed } from './errors.js'
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -18,7 +19,7 @@ export function cat(pathToFile) {
     // Check input
     pathToFile = pathToFile.trim();
     if (!pathToFile) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     const absolutePathToFile = util.pathToAbsolute(pathToFile);
@@ -37,7 +38,7 @@ export function cat(pathToFile) {
             if (readHandleToFile) readHandleToFile.close();
         })
         .catch(() => {
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;
@@ -55,7 +56,7 @@ export function add(newFilename) {
     // Check input
     newFilename = newFilename.trim();
     if (!newFilename || (path.basename(newFilename) !== newFilename)) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     const absolutePathToFile = path.resolve(path.join(getWorkdir(), newFilename));
@@ -64,7 +65,7 @@ export function add(newFilename) {
     const promise = fs.open(absolutePathToFile, 'wx')
         .then(filehandle => filehandle.close())
         .catch(() => {
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;
@@ -83,7 +84,7 @@ export function rn(params) {
 
     // Check input
     if (!pathToFile || !newFilename || (path.basename(newFilename) !== newFilename)) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     // Prepare paths
@@ -92,13 +93,13 @@ export function rn(params) {
     const absolutePathToNewFile = path.join(dir, newFilename);
     if (absolutePathToNewFile !== path.resolve(absolutePathToNewFile)) {
         // error: probably given a path instead of a filename
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     // Rename file
     const promise = fs.rename(absolutePathToOldFile, absolutePathToNewFile)
         .catch(() => {
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;
@@ -120,7 +121,7 @@ export function cp(params) {
 
     // Check input
     if (!pathToFile || !pathToNewDirectory) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     // Prepare paths
@@ -147,7 +148,7 @@ export function cp(params) {
             if (writeHandleToNewFile) writeHandleToNewFile.close();
         })
         .catch(() => {
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;
@@ -169,7 +170,7 @@ export function mv(params) {
 
     // Check input
     if (!pathToFile || !pathToNewDirectory) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     // Prepare paths
@@ -206,7 +207,7 @@ export function mv(params) {
             if (readHandleToOldFile) readHandleToOldFile.close();
             if (writeHandleToNewFile) writeHandleToNewFile.close();
 
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;
@@ -227,7 +228,7 @@ export function rm(pathToFile) {
     // Check input
     pathToFile = pathToFile.trim();
     if (!pathToFile) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     const absolutePathToFile = util.pathToAbsolute(pathToFile);
@@ -235,7 +236,7 @@ export function rm(pathToFile) {
     // Delete file
     const promise = fs.rm(absolutePathToFile)
         .catch(() => {
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;

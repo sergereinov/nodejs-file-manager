@@ -1,3 +1,4 @@
+import { errorInvalidInput } from './errors.js'
 import os from 'node:os'
 
 const subcommands = {
@@ -25,7 +26,7 @@ export function info(param) {
     const action = subcommands[param];
     if (typeof (action) !== 'function') {
         // error: unknown subcommand '${param}'
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
     return action();
 }

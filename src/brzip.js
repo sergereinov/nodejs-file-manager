@@ -1,4 +1,5 @@
 import * as util from './util.js';
+import { errorInvalidInput, errorOperationFailed } from './errors.js'
 import streamPromises from 'node:stream/promises';
 import fs from 'node:fs';
 import zlib from 'node:zlib';
@@ -18,7 +19,7 @@ export function compress(params) {
 
     // Check input
     if (!pathToFile || !pathToDestination) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     // Prepare paths
@@ -30,7 +31,7 @@ export function compress(params) {
         var readStream = fs.createReadStream(absolutePathToFile);
         var writeStream = fs.createWriteStream(absolutePathToDestination, { flags: 'wx' });
     } catch (_) {
-        throw new Error('Operation failed');
+        throw new Error(errorOperationFailed);
     }
 
     // Measure compression time
@@ -49,7 +50,7 @@ export function compress(params) {
             console.timeEnd(elapsedTimeLabel);
         })
         .catch(() => {
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;
@@ -70,7 +71,7 @@ export function decompress(params) {
 
     // Check input
     if (!pathToFile || !pathToDestination) {
-        throw new Error('Invalid input');
+        throw new Error(errorInvalidInput);
     }
 
     // Prepare paths
@@ -82,7 +83,7 @@ export function decompress(params) {
         var readStream = fs.createReadStream(absolutePathToFile);
         var writeStream = fs.createWriteStream(absolutePathToDestination, { flags: 'wx' });
     } catch (_) {
-        throw new Error('Operation failed');
+        throw new Error(errorOperationFailed);
     }
 
     // Decompress file
@@ -95,7 +96,7 @@ export function decompress(params) {
             console.log(`Done decompress to '${absolutePathToDestination}'`);
         })
         .catch(() => {
-            throw new Error('Operation failed');
+            throw new Error(errorOperationFailed);
         });
 
     return promise;

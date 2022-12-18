@@ -1,3 +1,5 @@
+import { errorInvalidInput } from './errors.js'
+
 export class Commands {
     constructor(commands) {
         this.commands = commands;
@@ -10,7 +12,7 @@ export class Commands {
         const action = this.commands[cmd];
         if (typeof (action) !== 'function') {
             // error: unknown command '${cmd}'
-            throw new Error('Invalid input');
+            throw new Error(errorInvalidInput);
         }
 
         const params = line.substring(cmdLen + 1);
