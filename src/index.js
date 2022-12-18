@@ -49,7 +49,6 @@ rl.on('line', (line) => {
     if (line.length > 0) {
         rl.pause();
         commands.do(line)
-            //.catch(console.error) // error with stack trace, uncomment it to check behaviour
             .catch((e) => console.log(e.message))
             .finally(() => {
                 showWorkdir();
