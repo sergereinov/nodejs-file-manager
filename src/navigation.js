@@ -21,16 +21,18 @@ export function up() {
  *  - `cd temp/`
  *  - `cd d:/temp`
  * 
- * @param {string} target 
+ * @param {string} pathToDirectory 
  * @returns {Promise} Promise with deferred operation
  */
-export function cd(target) {
+export function cd(pathToDirectory) {
     // Check input args
-    target = target.trim();
+    let target = pathToDirectory.trim();
     if (target.length === 0) {
         // error: target path not set
         throw new Error('Invalid input')
     }
+
+    target = target + '/'; // in case of change disk like 'cd d:'
 
     let dir;
     if (path.isAbsolute(target)) {
@@ -41,7 +43,10 @@ export function cd(target) {
 
     // Check if the destination folder exists
     const promise = fs.stat(dir)
-        .then(() => {
+        .then((stats) => {
+            if (!stats.isDirectory()) {
+                throw new Error('Operation failed');
+            }
             setWorkdir(dir);
         })
         .catch(() => {
@@ -75,13 +80,10 @@ export function ls() {
             });
 
             // Convert into table with {Name, Type} structure
-            const entities = e.map((v) => {
-                const obj = {
-                    Name: v.name,
-                    Type: v.isDirectory() ? 'directory' : 'file'
-                };
-                return obj;
-            });
+            const entities = e.map((v) => ({
+                Name: v.name,
+                Type: v.isDirectory() ? 'directory' : 'file'
+            }));
 
             // Print it
             console.table(entities);
