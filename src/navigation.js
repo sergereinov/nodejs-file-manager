@@ -1,4 +1,4 @@
-import { errorOperationFailed } from './errors.js'
+import { errorInvalidInput, errorOperationFailed } from './errors.js'
 import path from 'node:path'
 import * as fs from 'node:fs/promises'
 
@@ -21,9 +21,25 @@ export const up = () => cd('..');
  * @param {string} pathToDirectory 
  */
 export function cd(pathToDirectory) {
+    // Check input
+    if (!pathToDirectory || pathToDirectory.trim()) {
+        throw new Error(errorInvalidInput);
+    }
+
     try {
-        const dir = pathToDirectory.endsWith(':') ? path.join(pathToDirectory, './') : pathToDirectory;
-        process.chdir(dir);
+        let dir;
+        // check destination is root
+        const parts = path.parse(pathToDirectory);
+        if (!parts.base && parts.dir && parts.dir === parts.root) {
+            // going to root (in case of Windows - going to disk root, this is a non-standard rule)
+            // e.g. "cd d:" is forced to "cd d:/"
+            dir = path.join(pathToDirectory, './');
+        } else {
+            dir = pathToDirectory;
+        }
+        
+        // Change current work dir
+        process.chdir(dir);        
     } catch (_) {
         throw new Error(errorOperationFailed);
     }
