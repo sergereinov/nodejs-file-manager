@@ -22,7 +22,7 @@ export const up = () => cd('..');
  */
 export function cd(pathToDirectory) {
     // Check input
-    if (!pathToDirectory || pathToDirectory.trim()) {
+    if (!pathToDirectory || !pathToDirectory.trim()) {
         throw new Error(errorInvalidInput);
     }
 
