@@ -1,0 +1,70 @@
+import { homedir } from 'node:os'
+import * as readline from 'node:readline/promises';
+import { parseArgs } from './args.js';
+import ctrl_c from './ctrl-c.js';
+import { Commands } from './commands.js';
+import * as navigation from './navigation.js';
+import * as basic_ops from './basic-ops.js';
+import * as os_info from './os-info.js';
+import * as hash from './hash.js';
+import * as brzip from './brzip.js';
+
+const args = parseArgs(process.argv.slice(2));
+const username = () => args.username ?? 'Undefined User';
+const rl = readline.createInterface(process.stdin);
+
+function exit() {
+    console.log();
+    console.log(`Thank you for using File Manager, ${username()}, goodbye!`);
+    rl.close();
+    process.exit();
+}
+
+function showWorkdir() {
+    console.log();
+    console.log(`You are currently in ${process.cwd()}`);
+}
+function showPrompt() {
+    process.stdout.write('>');
+}
+
+const commands = new Commands({
+    '.exit': exit,
+    'up': navigation.up,
+    'cd': navigation.cd,
+    'ls': navigation.ls,
+    'cat': basic_ops.cat,
+    'add': basic_ops.add,
+    'rn': basic_ops.rn,
+    'cp': basic_ops.cp,
+    'mv': basic_ops.mv,
+    'rm': basic_ops.rm,
+    'os': os_info.info,
+    'hash': hash.calcHash,
+    'compress': brzip.compress,
+    'decompress': brzip.decompress
+});
+
+rl.on('line', (line) => {
+    if (line.length > 0) {
+        rl.pause();
+        commands.do(line)
+            .catch((e) => console.log(e.message))
+            .finally(() => {
+                showWorkdir();
+                showPrompt();
+                rl.resume();
+            });
+    } else {
+        showPrompt();
+    }
+});
+
+ctrl_c.addHandler(exit); // setup CTRL-C exit callback
+
+process.chdir(homedir());
+
+console.log(`Welcome to the File Manager, ${username()}!`);
+
+showWorkdir();
+showPrompt();

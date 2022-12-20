@@ -1,0 +1,14 @@
+{
+    "name": "nodejs-file-manager",
+    "version": "1.0.0",
+    "description": "Educational project for rs.school (NodeJS) https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/file-manager/assignment.md",
+    "type": "module",
+    "scripts": {
+        "start": "node src/index.js",
+        "start:test": "node src/index.js --username=Student1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sergereinov/nodejs-file-manager.git"
+    }
+}
